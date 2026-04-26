@@ -11,12 +11,11 @@
  */
 
 const GATEWAY_CONFIG = {
-  // Replace with your gateway endpoint
-  // Deixe null para usar o mock local de testes
-  endpoint: null,
+  // AbacatePay API endpoint
+  endpoint: 'https://api.abacatepay.com/v1/billing',
 
-  // Replace with your API key (use a backend proxy in production — never expose secret keys)
-  apiKey: 'YOUR_API_KEY',
+  // AbacatePay API key
+  apiKey: 'abc_prod_yeJaNm3pHDQGNREsDBKU4pat',
 
   // Timeout in ms
   timeoutMs: 15000,
@@ -25,25 +24,30 @@ const GATEWAY_CONFIG = {
 const Gateway = (() => {
 
   /**
-   * Build the request payload for the gateway.
-   * Adapt this to match your provider's API contract.
+   * Build the request payload for AbacatePay.
+   * Creates a billing with PIX payment method.
    *
-   * @param {{ amount: number, type: 'debit'|'credit', cardToken: string, source: string }} params
+   * @param {{ amount: number, type: 'debit'|'credit', cardToken: string, source: string, brand: string, expiry: string, holderName: string }} params
    * @returns {object}
    */
-  const buildPayload = ({ amount, type, cardToken, source }) => ({
-    amount,                    // integer, cents (e.g. 1990 = R$ 19,90)
-    currency: 'BRL',
-    payment_method: type,      // 'debit' | 'credit'
-    capture: true,
-    card: {
-      token: cardToken,
-      entry_mode: 'contactless_nfc',
-      token_source: source,
-    },
+  const buildPayload = ({ amount, type, cardToken, source, brand, expiry, holderName }) => ({
+    frequency: 'ONE_TIME',
+    methods: ['PIX'],
+    products: [{
+      externalId: `CARD-${Date.now()}`,
+      name: `Pagamento via ${brand || 'Cartão'}`,
+      description: `${type === 'debit' ? 'Débito' : 'Crédito'} - ${cardToken?.slice(0, 6)}...${cardToken?.slice(-4)} - ${expiry || 'N/A'}`,
+      quantity: 1,
+      price: amount, // em centavos
+    }],
     metadata: {
       app: 'TapOpenSource',
       version: '1.0.0',
+      paymentType: type,
+      cardBrand: brand,
+      cardToken: cardToken,
+      tokenSource: source,
+      holderName: holderName,
     },
   });
 
@@ -70,7 +74,6 @@ const Gateway = (() => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${GATEWAY_CONFIG.apiKey}`,
-          'X-App-Source': 'TapOpenSource',
         },
         body: JSON.stringify(buildPayload(params)),
         signal: controller.signal,
@@ -85,19 +88,21 @@ const Gateway = (() => {
           success: false,
           transactionId: data.id || null,
           authCode: null,
-          message: data.error?.message || `Erro ${response.status}`,
+          message: data.error?.message || data.message || `Erro ${response.status}`,
         };
         Log.warn('gateway:charge_declined', { status: response.status, message: result.message });
         return result;
       }
 
+      // AbacatePay retorna billing com URL de pagamento PIX
       const result = {
         success: true,
         transactionId: data.id,
-        authCode: data.authorization_code || data.auth_code || '------',
-        message: 'Pagamento aprovado',
+        authCode: data.url ? 'PIX-PENDING' : '------',
+        message: data.url ? 'Cobrança PIX criada' : 'Pagamento aprovado',
+        pixUrl: data.url, // URL para pagamento PIX
       };
-      Log.info('gateway:charge_approved', { transactionId: result.transactionId, authCode: result.authCode });
+      Log.info('gateway:charge_approved', { transactionId: result.transactionId, pixUrl: result.pixUrl });
       return result;
 
     } catch (err) {

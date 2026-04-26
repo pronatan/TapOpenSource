@@ -74,12 +74,24 @@ class MainViewModel : ViewModel() {
                 val token = android.util.Base64.encodeToString(
                     "${card.pan}|${card.expiry}".toByteArray(), android.util.Base64.NO_WRAP
                 )
+                
+                // Detecta bandeira pelo AID
+                val brand = when {
+                    card.aid.startsWith("A0000000031010") || card.aid.startsWith("A0000000032010") -> "Visa"
+                    card.aid.startsWith("A0000000041010") -> "Mastercard"
+                    card.aid.startsWith("A0000000043060") -> "Maestro"
+                    card.aid.startsWith("A0000001523010") -> "Elo"
+                    else -> "Unknown"
+                }
 
                 val result = GatewayClient.charge(
                     amountCents = amountCents,
                     type        = paymentType,
                     cardToken   = token,
                     source      = "emv_contactless",
+                    brand       = brand,
+                    expiry      = card.expiry,
+                    holderName  = card.cardholderName,
                 )
 
                 _state.value = AppState.Result(

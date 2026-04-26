@@ -13,9 +13,9 @@ import org.json.JSONObject
  */
 object GatewayClient {
 
-    // Configure aqui seu gateway (Cielo, Stone, Stripe, etc.)
-    private val ENDPOINT: String? = null
-    private const val API_KEY = "YOUR_API_KEY"
+    // AbacatePay configuration
+    private val ENDPOINT: String? = "https://api.abacatepay.com/v1/billing"
+    private const val API_KEY = "abc_prod_yeJaNm3pHDQGNREsDBKU4pat"
 
     private val client = OkHttpClient.Builder()
         .callTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
@@ -27,6 +27,7 @@ object GatewayClient {
         val transactionId: String?,
         val authCode: String?,
         val message: String,
+        val pixUrl: String? = null, // URL para pagamento PIX
     )
 
     fun charge(
@@ -34,6 +35,9 @@ object GatewayClient {
         type: String,          // "debit" | "credit"
         cardToken: String,
         source: String,
+        brand: String = "Unknown",
+        expiry: String = "N/A",
+        holderName: String = "",
     ): ChargeResult {
         if (ENDPOINT == null) {
             LogClient.info("gateway:mock_charge", mapOf("amount" to amountCents, "type" to type))
@@ -43,19 +47,27 @@ object GatewayClient {
         return try {
             LogClient.info("gateway:charge_start", mapOf("amount" to amountCents, "type" to type))
 
+            // AbacatePay billing payload
             val payload = JSONObject().apply {
-                put("amount", amountCents)
-                put("currency", "BRL")
-                put("payment_method", type)
-                put("capture", true)
-                put("card", JSONObject().apply {
-                    put("token", cardToken)
-                    put("entry_mode", "contactless_nfc")
-                    put("token_source", source)
-                })
+                put("frequency", "ONE_TIME")
+                put("methods", org.json.JSONArray().put("PIX"))
+                put("products", org.json.JSONArray().put(
+                    JSONObject().apply {
+                        put("externalId", "CARD-${System.currentTimeMillis()}")
+                        put("name", "Pagamento via $brand")
+                        put("description", "${if (type == "debit") "Débito" else "Crédito"} - ${cardToken.take(6)}...${cardToken.takeLast(4)} - $expiry")
+                        put("quantity", 1)
+                        put("price", amountCents)
+                    }
+                ))
                 put("metadata", JSONObject().apply {
                     put("app", "TapOpenSource-Android")
                     put("version", "1.0.0")
+                    put("paymentType", type)
+                    put("cardBrand", brand)
+                    put("cardToken", cardToken)
+                    put("tokenSource", source)
+                    put("holderName", holderName)
                 })
             }
 
@@ -63,7 +75,6 @@ object GatewayClient {
                 .url(ENDPOINT)
                 .post(payload.toString().toRequestBody(JSON_TYPE))
                 .header("Authorization", "Bearer $API_KEY")
-                .header("X-App-Source", "TapOpenSource-Android")
                 .build()
 
             val response = client.newCall(request).execute()
@@ -71,14 +82,18 @@ object GatewayClient {
             val data = JSONObject(body)
 
             if (!response.isSuccessful) {
-                val msg = data.optJSONObject("error")?.optString("message") ?: "Erro ${response.code}"
+                val msg = data.optJSONObject("error")?.optString("message") 
+                    ?: data.optString("message")
+                    ?: "Erro ${response.code}"
                 LogClient.warn("gateway:charge_declined", mapOf("status" to response.code, "message" to msg))
                 ChargeResult(false, null, null, msg)
             } else {
                 val txId = data.optString("id")
-                val auth = data.optString("authorization_code").ifEmpty { data.optString("auth_code", "------") }
-                LogClient.info("gateway:charge_approved", mapOf("transactionId" to txId, "authCode" to auth))
-                ChargeResult(true, txId, auth, "Pagamento aprovado")
+                val pixUrl = data.optString("url")
+                val auth = if (pixUrl.isNotEmpty()) "PIX-PENDING" else "------"
+                val msg = if (pixUrl.isNotEmpty()) "Cobrança PIX criada" else "Pagamento aprovado"
+                LogClient.info("gateway:charge_approved", mapOf("transactionId" to txId, "pixUrl" to pixUrl))
+                ChargeResult(true, txId, auth, msg, pixUrl)
             }
         } catch (e: Exception) {
             LogClient.error("gateway:fetch_error", mapOf("message" to (e.message ?: "unknown")))
