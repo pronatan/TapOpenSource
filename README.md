@@ -13,6 +13,7 @@ TapOpenSource é um projeto open source que permite processar pagamentos por apr
 - ✅ **PDOL dinâmico** com valores realistas para compatibilidade
 - ✅ **Parser TLV robusto** (BER-TLV completo)
 - ✅ **Web App** com NFC Web API (tags NDEF)
+- ✅ **Web-to-Native Bridge** - Web app processa cartões EMV via Android
 - ✅ **Design system próprio** (tap.css)
 - ✅ **Logs centralizados** via Cloudflare Worker
 - ✅ **Gateway plugável** (mock incluído)
@@ -130,6 +131,35 @@ Configure o token em `worker-logs/wrangler.toml`:
 [vars]
 LOG_TOKEN = "seu_token_secreto"
 ```
+
+---
+
+## 🌉 Web-to-Native Bridge
+
+A web app agora pode **processar cartões EMV** usando as capacidades nativas do Android!
+
+### Como funciona
+
+1. Abra o app Android TapOpenSource
+2. Toque em **"🌐 Modo Web (com NFC nativo)"**
+3. A web app carrega em um WebView
+4. Digite o valor e aproxime o cartão
+5. O NFC nativo lê o cartão EMV
+6. Os dados retornam para a web via JavaScript
+
+### Arquitetura
+
+```
+Web App (JS) ←→ JavaScript Interface ←→ Android Native (Kotlin)
+   bridge.js         WebViewActivity         EmvReader.kt
+```
+
+**Vantagens:**
+- ✅ Web app processa cartões EMV (antes só tags NDEF)
+- ✅ Mesma UI/UX da web com poder do Android
+- ✅ Fácil atualização - deploy na web, app usa automaticamente
+
+📖 **Documentação completa:** [BRIDGE.md](BRIDGE.md)
 
 ---
 
