@@ -13,9 +13,9 @@ import org.json.JSONObject
  */
 object GatewayClient {
 
-    // AbacatePay configuration - ATIVADO
-    private val ENDPOINT = "https://api.abacatepay.com/v2/checkouts/create"
-    private const val API_KEY = "abc_prod_yeJaNm3pHDQGNREsDBKU4pat"
+    // Gateway configuration - null = modo mock
+    private val ENDPOINT: String? = null
+    private const val API_KEY = "YOUR_API_KEY"
 
     private val client = OkHttpClient.Builder()
         .callTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
@@ -27,7 +27,6 @@ object GatewayClient {
         val transactionId: String?,
         val authCode: String?,
         val message: String,
-        val checkoutUrl: String? = null, // URL do checkout AbacatePay
     )
 
     fun charge(
@@ -47,31 +46,23 @@ object GatewayClient {
         return try {
             LogClient.info("gateway:charge_start", mapOf("amount" to amountCents, "type" to type))
 
-            // AbacatePay checkout payload
-            // Produto tem preço R$ 0,01 - calcula quantity para atingir valor desejado
-            val productPrice = 1 // R$ 0,01 em centavos
-            val quantity = maxOf(1, amountCents / productPrice)
-            
+            // Gateway payload genérico
             val payload = JSONObject().apply {
-                put("items", org.json.JSONArray().put(
-                    JSONObject().apply {
-                        put("id", "prod_Fbzagare4CyeXH4mtJ5zUjpy") // ✅ Produto: Pagamento NFC
-                        put("quantity", quantity)
-                    }
-                ))
-                put("methods", org.json.JSONArray().put("CARD"))
-                put("externalId", "CARD-${System.currentTimeMillis()}")
+                put("amount", amountCents)
+                put("currency", "BRL")
+                put("payment_method", type)
+                put("capture", true)
+                put("card", JSONObject().apply {
+                    put("token", cardToken)
+                    put("entry_mode", "contactless_nfc")
+                    put("token_source", source)
+                    put("brand", brand)
+                    put("expiry", expiry)
+                    put("holder_name", holderName)
+                })
                 put("metadata", JSONObject().apply {
                     put("app", "TapOpenSource-Android")
                     put("version", "1.0.0")
-                    put("paymentType", type)
-                    put("cardBrand", brand)
-                    put("cardToken", cardToken)
-                    put("tokenSource", source)
-                    put("holderName", holderName)
-                    put("expiry", expiry)
-                    put("amount", amountCents)
-                    put("description", "${if (type == "debit") "Débito" else "Crédito"} - $brand - R$ ${String.format("%.2f", amountCents / 100.0)}")
                 })
             }
 
@@ -93,12 +84,9 @@ object GatewayClient {
                 ChargeResult(false, null, null, msg)
             } else {
                 val txId = data.optString("id")
-                val checkoutUrl = data.optString("url")
-                val status = data.optString("status")
-                val auth = if (status == "PENDING") "PENDING" else status
-                val msg = if (checkoutUrl.isNotEmpty()) "Checkout criado" else "Pagamento processado"
-                LogClient.info("gateway:charge_approved", mapOf("transactionId" to txId, "checkoutUrl" to checkoutUrl))
-                ChargeResult(true, txId, auth, msg, checkoutUrl)
+                val auth = data.optString("authorization_code").ifEmpty { data.optString("auth_code", "------") }
+                LogClient.info("gateway:charge_approved", mapOf("transactionId" to txId, "authCode" to auth))
+                ChargeResult(true, txId, auth, "Pagamento aprovado")
             }
         } catch (e: Exception) {
             LogClient.error("gateway:fetch_error", mapOf("message" to (e.message ?: "unknown")))
@@ -107,29 +95,23 @@ object GatewayClient {
     }
 
     private fun mockCharge(amountCents: Int, type: String): ChargeResult {
-        // Simula o payload que seria enviado ao AbacatePay
+        // Simula processamento de pagamento
         val mockPayload = JSONObject().apply {
-            put("items", org.json.JSONArray().put(
-                JSONObject().apply {
-                    put("id", "PRODUTO_ID_AQUI") // ⚠️ Criar produto no dashboard
-                    put("quantity", 1)
-                }
-            ))
-            put("methods", org.json.JSONArray().put("CARD"))
-            put("externalId", "CARD-${System.currentTimeMillis()}")
+            put("amount", amountCents)
+            put("currency", "BRL")
+            put("payment_method", type)
+            put("capture", true)
             put("metadata", JSONObject().apply {
                 put("app", "TapOpenSource")
                 put("paymentType", type)
-                put("amount", amountCents)
                 put("description", "${if (type == "debit") "DÉBITO" else "CRÉDITO"} - R$ ${amountCents / 100.0}")
             })
         }
         
         android.util.Log.d("GatewayClient", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        android.util.Log.d("GatewayClient", "🥑 MOCK: Payload AbacatePay (Checkout API v2):")
+        android.util.Log.d("GatewayClient", "💳 MOCK: Payload Gateway:")
         android.util.Log.d("GatewayClient", mockPayload.toString(2))
-        android.util.Log.d("GatewayClient", "Endpoint: POST https://api.abacatepay.com/v2/checkouts/create")
-        android.util.Log.d("GatewayClient", "Método: CARD (${if (type == "debit") "DÉBITO" else "CRÉDITO"})")
+        android.util.Log.d("GatewayClient", "Método: ${if (type == "debit") "DÉBITO" else "CRÉDITO"}")
         android.util.Log.d("GatewayClient", "Valor: R$ ${String.format("%.2f", amountCents / 100.0)}")
         android.util.Log.d("GatewayClient", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         

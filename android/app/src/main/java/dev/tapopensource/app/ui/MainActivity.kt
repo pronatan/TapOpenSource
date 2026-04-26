@@ -104,11 +104,6 @@ class MainActivity : AppCompatActivity() {
         }
         binding.btnCancelNfc.setOnClickListener { vm.cancelNfc() }
         binding.btnNewCharge.setOnClickListener  { vm.reset(); updateAmount() }
-        
-        // Botão para abrir modo Web
-        findViewById<Button>(R.id.btn_web_mode).setOnClickListener {
-            startActivity(Intent(this, WebViewActivity::class.java))
-        }
     }
 
     // ── State Observer ────────────────────────────────────────

@@ -14,10 +14,9 @@ TapOpenSource é um projeto open source que permite processar pagamentos por apr
 - ✅ **Parser TLV robusto** (BER-TLV completo)
 - ✅ **Web App** com NFC Web API (tags NDEF)
 - ✅ **Web-to-Native Bridge** - Web app processa cartões EMV via Android
-- ✅ **AbacatePay integrado** - Pagamentos reais via PIX
 - ✅ **Design system próprio** (tap.css)
 - ✅ **Logs centralizados** via Cloudflare Worker
-- ✅ **Gateway plugável** (AbacatePay configurado)
+- ✅ **Gateway plugável** (mock mode ativo)
 - ✅ **Vibração** em cada etapa da transação
 - ✅ **Animação NFC** com 3 anéis pulsantes
 
@@ -142,11 +141,10 @@ A web app agora pode **processar cartões EMV** usando as capacidades nativas do
 ### Como funciona
 
 1. Abra o app Android TapOpenSource
-2. Toque em **"🌐 Modo Web (com NFC nativo)"**
-3. A web app carrega em um WebView
-4. Digite o valor e aproxime o cartão
-5. O NFC nativo lê o cartão EMV
-6. Os dados retornam para a web via JavaScript
+2. A web app carrega em um WebView com JavaScript Interface
+3. Digite o valor e aproxime o cartão
+4. O NFC nativo lê o cartão EMV
+5. Os dados retornam para a web via JavaScript
 
 ### Arquitetura
 
@@ -161,26 +159,6 @@ Web App (JS) ←→ JavaScript Interface ←→ Android Native (Kotlin)
 - ✅ Fácil atualização - deploy na web, app usa automaticamente
 
 📖 **Documentação completa:** [BRIDGE.md](BRIDGE.md)
-
----
-
-## 🥑 AbacatePay Integration
-
-O projeto está integrado com **AbacatePay** para processar pagamentos reais via PIX!
-
-### Como funciona
-
-1. Usuário aproxima cartão EMV
-2. App lê dados do cartão (PAN, bandeira, validade)
-3. Cria cobrança PIX no AbacatePay
-4. Retorna URL de pagamento
-5. Usuário paga via PIX
-
-**Credenciais configuradas:**
-- API Key: `abc_prod_yeJaNm3pHDQGNREsDBKU4pat`
-- Endpoint: `https://api.abacatepay.com/v1/billing`
-
-📖 **Documentação completa:** [ABACATEPAY.md](ABACATEPAY.md)
 
 ---
 

@@ -11,11 +11,11 @@
  */
 
 const GATEWAY_CONFIG = {
-  // AbacatePay API endpoint - ATIVADO
-  endpoint: 'https://api.abacatepay.com/v2/checkouts/create',
+  // Gateway endpoint - null = modo mock
+  endpoint: null,
   
-  // AbacatePay API key
-  apiKey: 'abc_prod_yeJaNm3pHDQGNREsDBKU4pat',
+  // API key do gateway
+  apiKey: 'YOUR_API_KEY',
 
   // Timeout in ms
   timeoutMs: 15000,
@@ -24,45 +24,30 @@ const GATEWAY_CONFIG = {
 const Gateway = (() => {
 
   /**
-   * Build the request payload for AbacatePay Checkout.
-   * IMPORTANTE: Requer produto pré-cadastrado no dashboard AbacatePay.
-   * 
-   * Para ativar:
-   * 1. Acesse https://app.abacatepay.com/products
-   * 2. Crie um produto (ex: "Pagamento NFC")
-   * 3. Copie o ID do produto (ex: "prod_abc123xyz")
-   * 4. Substitua 'PRODUTO_ID_AQUI' abaixo pelo ID real
+   * Build the request payload for the gateway.
+   * Adapt this to match your provider's API contract.
    *
    * @param {{ amount: number, type: 'debit'|'credit', cardToken: string, source: string, brand: string, expiry: string, holderName: string }} params
    * @returns {object}
    */
-  const buildPayload = ({ amount, type, cardToken, source, brand, expiry, holderName }) => {
-    // Produto tem preço R$ 0,01 (1 centavo)
-    // Quantidade = valor total / preço unitário
-    const productPrice = 1; // R$ 0,01 em centavos
-    const quantity = Math.max(1, Math.floor(amount / productPrice));
-    
-    return {
-      items: [{
-        id: 'prod_Fbzagare4CyeXH4mtJ5zUjpy', // ✅ Produto: Pagamento NFC (R$ 0,01)
-        quantity: quantity, // Calcula quantity para atingir o valor desejado
-      }],
-      methods: ['CARD'], // Cartão de crédito/débito
-      externalId: `CARD-${Date.now()}`,
-      metadata: {
-        app: 'TapOpenSource',
-        version: '1.0.0',
-        paymentType: type,
-        cardBrand: brand,
-        cardToken: cardToken,
-        tokenSource: source,
-        holderName: holderName,
-        expiry: expiry,
-        amount: amount, // valor real em centavos
-        description: `${type === 'debit' ? 'Débito' : 'Crédito'} - ${brand} - R$ ${(amount / 100).toFixed(2)}`,
-      },
-    };
-  };
+  const buildPayload = ({ amount, type, cardToken, source, brand, expiry, holderName }) => ({
+    amount,
+    currency: 'BRL',
+    payment_method: type,
+    capture: true,
+    card: {
+      token: cardToken,
+      entry_mode: 'contactless_nfc',
+      token_source: source,
+      brand: brand,
+      expiry: expiry,
+      holder_name: holderName,
+    },
+    metadata: {
+      app: 'TapOpenSource',
+      version: '1.0.0',
+    },
+  });
 
   /**
    * Process a payment through the configured gateway.
@@ -107,15 +92,13 @@ const Gateway = (() => {
         return result;
       }
 
-      // AbacatePay retorna checkout com URL de pagamento
       const result = {
         success: true,
         transactionId: data.id,
-        authCode: data.status === 'PENDING' ? 'PENDING' : data.status,
-        message: data.url ? 'Checkout criado - redirecione para pagamento' : 'Pagamento processado',
-        checkoutUrl: data.url, // URL do checkout AbacatePay
+        authCode: data.authorization_code || data.auth_code || '------',
+        message: 'Pagamento aprovado',
       };
-      Log.info('gateway:charge_approved', { transactionId: result.transactionId, checkoutUrl: result.checkoutUrl });
+      Log.info('gateway:charge_approved', { transactionId: result.transactionId, authCode: result.authCode });
       return result;
 
     } catch (err) {
@@ -132,16 +115,13 @@ const Gateway = (() => {
   /**
    * Mock local para testes sem gateway real.
    * Simula latência de rede e aprova 80% das transações.
-   * MOSTRA O PAYLOAD QUE SERIA ENVIADO AO ABACATEPAY.
    */
   const _mockCharge = (params) => new Promise((resolve) => {
-    // Loga o payload que seria enviado ao AbacatePay
     const payload = buildPayload(params);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('🥑 MOCK: Payload AbacatePay (Checkout API v2):');
+    console.log('💳 MOCK: Payload Gateway:');
     console.log(JSON.stringify(payload, null, 2));
-    console.log('Endpoint: POST https://api.abacatepay.com/v2/checkouts/create');
-    console.log(`Método: CARD (${params.type === 'debit' ? 'DÉBITO' : 'CRÉDITO'})`);
+    console.log(`Método: ${params.type === 'debit' ? 'DÉBITO' : 'CRÉDITO'}`);
     console.log(`Valor: R$ ${(params.amount / 100).toFixed(2)}`);
     console.log(`Bandeira: ${params.brand || 'N/A'}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
