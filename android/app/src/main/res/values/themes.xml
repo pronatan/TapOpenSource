@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base TextAppearances com Inter -->
+    <style name="TextAppearance.TapOS.Base" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
+
+    <!-- Tema principal -->
+    <style name="Theme.TapOpenSource" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#16a34a</item>
+        <item name="colorPrimaryVariant">#16a34a</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="android:windowBackground">#f0fdf4</item>
+        <item name="android:statusBarColor">#f0fdf4</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">#f0fdf4</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.TapOS.Base</item>
+    </style>
+
+    <!-- Botão primário verde -->
+    <style name="Widget.TapOS.PrimaryBtn" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/primary_btn_bg</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- Botão ghost (borda) -->
+    <style name="Widget.TapOS.GhostBtn" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">#bbf7d0</item>
+        <item name="android:textColor">#6b7280</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">15sp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Toggle débito/crédito -->
+    <style name="Widget.TapOS.ToggleBtn" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">#bbf7d0</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:textColor">#6b7280</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:letterSpacing">0.03</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="iconTint">#6b7280</item>
+    </style>
+
+    <!-- Tecla do numpad -->
+    <style name="Widget.TapOS.NumKey" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">#bbf7d0</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="backgroundTint">#ffffff</item>
+        <item name="android:textColor">#14532d</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_height">68dp</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="elevation">1dp</item>
+    </style>
+
+</resources>

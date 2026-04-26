@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TapOpenSource</title>
+  <link rel="stylesheet" href="fonts.css" />
+  <link rel="stylesheet" href="tap.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#f0fdf4" />
+</head>
+<body>
+<div class="tap-app">
+
+
+
+  <main style="flex:1">
+
+    <!-- ── Screen: Amount ── -->
+    <section id="screen-amount" class="tap-screen active" aria-label="Inserir valor">
+
+      <h1 class="tap-title">Valor da cobrança</h1>
+
+      <div class="tap-card">
+        <div class="tap-amount">
+          <span id="amount-value" class="tap-amount__value">R$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="tap-numpad" role="group" aria-label="Teclado numérico">
+        <button class="tap-key" data-key="1" aria-label="1">1</button>
+        <button class="tap-key" data-key="2" aria-label="2">2</button>
+        <button class="tap-key" data-key="3" aria-label="3">3</button>
+        <button class="tap-key" data-key="4" aria-label="4">4</button>
+        <button class="tap-key" data-key="5" aria-label="5">5</button>
+        <button class="tap-key" data-key="6" aria-label="6">6</button>
+        <button class="tap-key" data-key="7" aria-label="7">7</button>
+        <button class="tap-key" data-key="8" aria-label="8">8</button>
+        <button class="tap-key" data-key="9" aria-label="9">9</button>
+        <button class="tap-key tap-key--clear" data-key="clear" aria-label="Limpar">C</button>
+        <button class="tap-key" data-key="0" aria-label="0">0</button>
+        <!-- Bootstrap Icons: backspace-fill -->
+        <button class="tap-key tap-key--back" data-key="backspace" aria-label="Apagar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M15.683 3a2 2 0 0 0-2-2h-7.08a2 2 0 0 0-1.519.698L.241 7.35a1 1 0 0 0 0 1.302l4.843 5.65A2 2 0 0 0 6.603 15h7.08a2 2 0 0 0 2-2V3zM5.829 5.854a.5.5 0 1 1 .707-.708l2.147 2.147 2.146-2.147a.5.5 0 1 1 .707.708L9.39 8l2.146 2.146a.5.5 0 0 1-.707.708L8.683 8.707l-2.147 2.147a.5.5 0 0 1-.707-.708L7.976 8 5.829 5.854z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="tap-toggle" role="group" aria-label="Tipo de pagamento">
+        <!-- Bootstrap Icons: credit-card-fill -->
+        <button id="btn-debit" class="tap-toggle__btn active" data-type="debit" aria-pressed="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0V4zm0 3h16v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7zm3 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1H3zm2.5 0a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z"/>
+          </svg>
+          Débito
+        </button>
+        <!-- Bootstrap Icons: credit-card-2-front-fill -->
+        <button id="btn-credit" class="tap-toggle__btn" data-type="credit" aria-pressed="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2 3v1h4V7H2zm0 2v1h1V9H2zm2 0v1h1V9H4zm2 0v1h1V9H6zm2-2v1h1V7H8zm2 0v1h1V7h-1zm2 0v1h1V7h-1zm-6 2v1h5V9H8z"/>
+          </svg>
+          Crédito
+        </button>
+      </div>
+
+      <!-- Bootstrap Icons: lightning-charge -->
+      <button id="btn-charge" class="tap-btn tap-btn--primary" disabled aria-label="Iniciar cobrança">
+        Cobrar
+      </button>
+    </section>
+
+    <!-- ── Screen: NFC ── -->
+    <section id="screen-nfc" class="tap-screen" aria-label="Leitura NFC" aria-live="polite">
+      <h2 class="tap-title">Aproxime o cartão</h2>
+
+      <div class="tap-nfc-wrap" aria-hidden="true">
+        <div class="tap-nfc-ring"></div>
+        <div class="tap-nfc-ring"></div>
+        <div class="tap-nfc-ring"></div>
+        <!-- Bootstrap Icons: phone-fill -->
+        <div class="tap-nfc-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M3 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V2zm6 11a1 1 0 1 0-2 0 1 1 0 0 0 2 0z"/>
+          </svg>
+        </div>
+      </div>
+
+      <p id="nfc-status" class="tap-subtitle">Aguardando leitura NFC...</p>
+
+      <!-- Bootstrap Icons: x-circle -->
+      <button id="btn-cancel-nfc" class="tap-btn tap-btn--ghost">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+        Cancelar
+      </button>
+    </section>
+
+    <!-- ── Screen: Processing ── -->
+    <section id="screen-processing" class="tap-screen" aria-label="Processando pagamento" aria-live="polite">
+      <div class="tap-spinner" role="status" aria-label="Carregando"></div>
+      <h2 class="tap-title">Processando...</h2>
+      <p id="processing-status" class="tap-subtitle">Enviando ao gateway</p>
+    </section>
+
+    <!-- ── Screen: Result ── -->
+    <section id="screen-result" class="tap-screen" aria-label="Resultado do pagamento" aria-live="assertive">
+      <div id="result-icon" class="tap-result-icon" aria-hidden="true"></div>
+      <h2 id="result-title" class="tap-title"></h2>
+      <p id="result-message" class="tap-subtitle"></p>
+
+      <div id="result-details" class="tap-card tap-result-rows"></div>
+
+      <!-- Bootstrap Icons: arrow-counterclockwise -->
+      <button id="btn-new-charge" class="tap-btn tap-btn--primary">
+        Nova cobrança
+      </button>
+    </section>
+
+  </main>
+
+
+
+</div>
+
+<script src="log.js"></script>
+<script src="nfc.js"></script>
+<script src="gateway.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

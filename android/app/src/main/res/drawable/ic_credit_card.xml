@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bootstrap Icons: credit-card-fill -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp" android:height="20dp"
+    android:viewportWidth="16" android:viewportHeight="16">
+    <path android:fillColor="@color/primary"
+        android:pathData="M0,4a2,2 0,0 1,2 -2h12a2,2 0,0 1,2 2v1H0V4zM0,7h16v5a2,2 0,0 1,-2 2H2a2,2 0,0 1,-2 -2V7zM3,9a0.5,0.5 0,0 0,0 1h1a0.5,0.5 0,0 0,0 -1H3zM5.5,9a0.5,0.5 0,0 0,0 1h5a0.5,0.5 0,0 0,0 -1h-5z"/>
+</vector>

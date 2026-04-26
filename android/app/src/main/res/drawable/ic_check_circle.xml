@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bootstrap Icons: check-circle-fill -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp" android:height="72dp"
+    android:viewportWidth="16" android:viewportHeight="16">
+    <path android:fillColor="@color/success"
+        android:pathData="M16,8A8,8 0,1 1,0 8a8,8 0,0 1,16 0zM6.97,11.03a0.75,0.75 0,0 0,1.079 -0.02l3.992,-4.99a0.75,0.75 0,1 0,-1.071 -1.05l-3.477,4.345 -1.485,-1.484a0.75,0.75 0,1 0,-1.06 1.06l2.022,2.139z"/>
+</vector>

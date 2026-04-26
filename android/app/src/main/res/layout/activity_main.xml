@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0fdf4">
+
+    <!-- ── Screen: Amount ── -->
+    <ScrollView
+        android:id="@+id/screen_amount"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp">
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Valor da cobrança"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/inter"
+                android:textColor="#111827"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Amount card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#ffffff"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#bbf7d0"
+                app:strokeWidth="1dp"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:id="@+id/amount_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="R$ 0,00"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/inter"
+                    android:textColor="#d1d5db"
+                    android:gravity="center"
+                    android:padding="32dp"
+                    android:letterSpacing="-0.02"/>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Numpad -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:rowCount="4"
+                android:layout_marginBottom="12dp">
+
+                <!-- Row 1 -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key1"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="1"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key2"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="2"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key3"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="3"/>
+
+                <!-- Row 2 -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key4"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="4"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key5"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="5"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key6"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="6"/>
+
+                <!-- Row 3 -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key7"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="7"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key8"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="8"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key9"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="9"/>
+
+                <!-- Row 4 -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key_clear"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="C"
+                    android:textColor="#dc2626"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key0"
+                    style="@style/Widget.TapOS.NumKey"
+                    android:text="0"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/key_backspace"
+                    style="@style/Widget.TapOS.NumKey"
+                    app:icon="@drawable/ic_backspace"
+                    app:iconGravity="textStart"
+                    app:iconTint="#6b7280"
+                    app:iconPadding="0dp"/>
+            </GridLayout>
+
+            <!-- Type toggle -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_debit"
+                    style="@style/Widget.TapOS.ToggleBtn"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:text="DÉBITO"
+                    android:textColor="@color/toggle_btn_text"
+                    android:background="@drawable/toggle_btn_bg"
+                    app:icon="@drawable/ic_credit_card"
+                    app:iconGravity="textStart"
+                    app:iconSize="16dp"
+                    app:iconTint="@color/toggle_btn_icon"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_credit"
+                    style="@style/Widget.TapOS.ToggleBtn"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="CRÉDITO"
+                    android:textColor="@color/toggle_btn_text"
+                    android:background="@drawable/toggle_btn_bg"
+                    app:icon="@drawable/ic_credit_card"
+                    app:iconGravity="textStart"
+                    app:iconSize="16dp"
+                    app:iconTint="@color/toggle_btn_icon"/>
+            </LinearLayout>
+
+            <!-- Charge button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_charge"
+                style="@style/Widget.TapOS.PrimaryBtn"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Cobrar"
+                android:enabled="false"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ── Screen: NFC ── -->
+    <LinearLayout
+        android:id="@+id/screen_nfc"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aproxime o cartão"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/inter"
+            android:textColor="#111827"
+            android:layout_marginBottom="32dp"/>
+
+        <dev.tapopensource.app.ui.NfcPulseView
+            android:id="@+id/nfc_pulse"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/nfc_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aguardando leitura NFC..."
+            android:textSize="14sp"
+            android:fontFamily="@font/inter"
+            android:textColor="#6b7280"
+            android:gravity="center"
+            android:layout_marginBottom="48dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel_nfc"
+            style="@style/Widget.TapOS.GhostBtn"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Cancelar"
+            app:icon="@drawable/ic_x_circle"
+            app:iconGravity="textStart"
+            app:iconSize="18dp"/>
+    </LinearLayout>
+
+    <!-- ── Screen: Processing ── -->
+    <LinearLayout
+        android:id="@+id/screen_processing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:indeterminateTint="#16a34a"
+            android:layout_marginBottom="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Processando..."
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/inter"
+            android:textColor="#111827"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enviando ao gateway"
+            android:textSize="14sp"
+            android:fontFamily="@font/inter"
+            android:textColor="#6b7280"/>
+    </LinearLayout>
+
+    <!-- ── Screen: Result ── -->
+    <ScrollView
+        android:id="@+id/screen_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp">
+
+            <ImageView
+                android:id="@+id/result_icon"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/result_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/inter"
+                android:textColor="#111827"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/result_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:fontFamily="@font/inter"
+                android:textColor="#6b7280"
+                android:gravity="center"
+                android:layout_marginBottom="20dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/result_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#ffffff"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#bbf7d0"
+                app:strokeWidth="1dp"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <include android:id="@+id/row_amount" layout="@layout/result_row"/>
+                    <include android:id="@+id/row_type"   layout="@layout/result_row"/>
+                    <include android:id="@+id/row_auth"   layout="@layout/result_row"/>
+                    <include android:id="@+id/row_txid"   layout="@layout/result_row"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_new_charge"
+                style="@style/Widget.TapOS.PrimaryBtn"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Nova cobrança"/>
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

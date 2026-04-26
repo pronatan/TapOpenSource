@@ -1,0 +1,383 @@
+/**
+ * TapOpenSource Design System — tap.css
+ * Stack própria: tokens, reset, layout, componentes, utilitários
+ */
+
+/* ─── Tokens ─────────────────────────────────────────────── */
+:root {
+  /* Colors — light green theme */
+  --tap-bg:          #f0fdf4;
+  --tap-surface:     #ffffff;
+  --tap-surface-2:   #f0fdf4;
+  --tap-border:      #bbf7d0;
+  --tap-primary:     #16a34a;
+  --tap-primary-dim: rgba(22,163,74,.10);
+  --tap-success:     #15803d;
+  --tap-success-dim: rgba(21,128,61,.12);
+  --tap-error:       #dc2626;
+  --tap-error-dim:   rgba(220,38,38,.10);
+  --tap-text:        #14532d;
+  --tap-muted:       #4b5563;
+  --tap-white:       #111827;
+
+  /* Typography */
+  --tap-font:        'Inter', 'Segoe UI', system-ui, sans-serif;
+  --tap-mono:        'JetBrains Mono', 'Fira Code', monospace;
+  --tap-size-xs:     .72rem;
+  --tap-size-sm:     .85rem;
+  --tap-size-base:   1rem;
+  --tap-size-lg:     1.2rem;
+  --tap-size-xl:     1.5rem;
+  --tap-size-2xl:    2rem;
+  --tap-size-3xl:    2.8rem;
+
+  /* Spacing */
+  --tap-space-1:  4px;
+  --tap-space-2:  8px;
+  --tap-space-3:  12px;
+  --tap-space-4:  16px;
+  --tap-space-5:  20px;
+  --tap-space-6:  24px;
+  --tap-space-8:  32px;
+  --tap-space-10: 40px;
+
+  /* Radius */
+  --tap-r-sm:   8px;
+  --tap-r-md:   12px;
+  --tap-r-lg:   16px;
+  --tap-r-full: 9999px;
+
+  /* Shadows */
+  --tap-shadow-sm:   0 1px 3px rgba(0,0,0,.08);
+  --tap-shadow-md:   0 4px 16px rgba(0,0,0,.10);
+  --tap-shadow-glow: 0 0 20px rgba(22,163,74,.20);
+
+  /* Transitions */
+  --tap-ease:     cubic-bezier(.4,0,.2,1);
+  --tap-duration: 150ms;
+}
+
+/* ─── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--tap-bg);
+  color: var(--tap-text);
+  font-family: var(--tap-font);
+  font-size: var(--tap-size-base);
+  line-height: 1.6;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; }
+a { color: var(--tap-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+svg { display: block; flex-shrink: 0; }
+
+/* ─── Layout ─────────────────────────────────────────────── */
+.tap-app {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--tap-space-6) var(--tap-space-4) var(--tap-space-8);
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.tap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--tap-space-5) 0 var(--tap-space-4);
+}
+
+.tap-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--tap-space-2);
+  font-size: var(--tap-size-lg);
+  font-weight: 700;
+  letter-spacing: -.5px;
+  color: var(--tap-white);
+}
+
+.tap-logo svg { color: var(--tap-primary); }
+
+.tap-badge {
+  font-size: var(--tap-size-xs);
+  font-weight: 700;
+  background: var(--tap-primary);
+  color: var(--tap-white);
+  padding: 3px var(--tap-space-2);
+  border-radius: var(--tap-r-full);
+  letter-spacing: .6px;
+  text-transform: uppercase;
+}
+
+/* ─── Screens ────────────────────────────────────────────── */
+.tap-screen { display: none; flex-direction: column; gap: var(--tap-space-5); padding-top: var(--tap-space-3); }
+.tap-screen.active { display: flex; }
+
+/* ─── Typography helpers ─────────────────────────────────── */
+.tap-title {
+  font-size: var(--tap-size-xl);
+  font-weight: 700;
+  text-align: center;
+  color: #111827;
+}
+
+.tap-subtitle {
+  font-size: var(--tap-size-sm);
+  color: var(--tap-muted);
+  text-align: center;
+}
+
+/* ─── Card / Surface ─────────────────────────────────────── */
+.tap-card {
+  background: var(--tap-surface);
+  border: 1px solid var(--tap-border);
+  border-radius: var(--tap-r-lg);
+  padding: var(--tap-space-6);
+  box-shadow: var(--tap-shadow-sm);
+}
+
+/* ─── Amount Display ─────────────────────────────────────── */
+.tap-amount {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--tap-space-1);
+}
+
+.tap-amount__value {
+  font-size: var(--tap-size-3xl);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: #d1d5db;
+  font-variant-numeric: tabular-nums;
+  transition: color 150ms ease;
+}
+
+.tap-amount__value.has-value {
+  color: var(--tap-text);
+}
+
+/* ─── Numpad ─────────────────────────────────────────────── */
+.tap-numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--tap-space-3);
+}
+
+.tap-key {
+  background: var(--tap-surface);
+  border: 1px solid var(--tap-border);
+  border-radius: var(--tap-r-md);
+  color: var(--tap-text);
+  font-size: var(--tap-size-xl);
+  font-weight: 500;
+  padding: var(--tap-space-5);
+  transition: background var(--tap-duration) var(--tap-ease),
+              transform var(--tap-duration) var(--tap-ease),
+              border-color var(--tap-duration) var(--tap-ease);
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--tap-shadow-sm);
+}
+
+.tap-key:hover { background: var(--tap-surface-2); border-color: var(--tap-primary); }
+.tap-key:active { background: var(--tap-border); transform: scale(.95); }
+.tap-key--clear { color: var(--tap-error); }
+.tap-key--back  { color: var(--tap-muted); }
+.tap-key--back svg { pointer-events: none; }
+
+/* ─── Payment Type Toggle ────────────────────────────────── */
+.tap-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--tap-space-3);
+}
+
+.tap-toggle__btn {
+  background: var(--tap-surface);
+  border: 2px solid var(--tap-border);
+  border-radius: var(--tap-r-md);
+  color: var(--tap-muted);
+  font-size: var(--tap-size-sm);
+  font-weight: 700;
+  padding: var(--tap-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tap-space-2);
+  transition: all var(--tap-duration) var(--tap-ease);
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  box-shadow: var(--tap-shadow-sm);
+}
+
+.tap-toggle__btn:hover { border-color: var(--tap-primary); color: var(--tap-text); }
+
+.tap-toggle__btn.active {
+  border-color: var(--tap-primary);
+  color: var(--tap-primary);
+  background: var(--tap-primary-dim);
+  box-shadow: var(--tap-shadow-glow);
+}
+
+/* ─── Buttons ────────────────────────────────────────────── */
+.tap-btn {
+  width: 100%;
+  padding: var(--tap-space-4) var(--tap-space-6);
+  border-radius: var(--tap-r-lg);
+  font-size: var(--tap-size-base);
+  font-weight: 700;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tap-space-2);
+  transition: all var(--tap-duration) var(--tap-ease);
+  letter-spacing: .2px;
+}
+
+.tap-btn--primary {
+  background: var(--tap-primary);
+  color: #ffffff;
+  box-shadow: var(--tap-shadow-glow);
+}
+
+.tap-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.tap-btn--primary:active:not(:disabled) { transform: translateY(0); }
+
+.tap-btn--primary:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.tap-btn--ghost {
+  background: transparent;
+  border: 1px solid var(--tap-border);
+  color: var(--tap-muted);
+}
+
+.tap-btn--ghost:hover { border-color: var(--tap-text); color: var(--tap-text); }
+
+/* ─── NFC Animation ──────────────────────────────────────── */
+.tap-nfc-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: var(--tap-space-5) auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tap-nfc-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--tap-primary);
+  animation: tap-pulse 2s ease-out infinite;
+  opacity: 0;
+}
+
+.tap-nfc-ring:nth-child(1) { width: 56px;  height: 56px;  animation-delay: 0s; }
+.tap-nfc-ring:nth-child(2) { width: 96px;  height: 96px;  animation-delay: .5s; }
+.tap-nfc-ring:nth-child(3) { width: 140px; height: 140px; animation-delay: 1s; }
+
+@keyframes tap-pulse {
+  0%   { transform: scale(.85); opacity: .9; }
+  100% { transform: scale(1.1); opacity: 0; }
+}
+
+.tap-nfc-icon {
+  z-index: 1;
+  color: var(--tap-primary);
+  filter: drop-shadow(0 0 8px rgba(22,163,74,.4));
+}
+
+/* ─── Spinner ────────────────────────────────────────────── */
+.tap-spinner {
+  width: 52px;
+  height: 52px;
+  border: 3px solid var(--tap-border);
+  border-top-color: var(--tap-primary);
+  border-radius: 50%;
+  animation: tap-spin .75s linear infinite;
+  margin: var(--tap-space-5) auto;
+}
+
+@keyframes tap-spin { to { transform: rotate(360deg); } }
+
+/* ─── Result ─────────────────────────────────────────────── */
+.tap-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: var(--tap-space-5) auto var(--tap-space-2);
+}
+
+.tap-result-icon--success {
+  background: var(--tap-success-dim);
+  color: var(--tap-success);
+  box-shadow: 0 0 24px rgba(22,163,74,.15);
+}
+
+.tap-result-icon--error {
+  background: var(--tap-error-dim);
+  color: var(--tap-error);
+  box-shadow: 0 0 24px rgba(220,38,38,.15);
+}
+
+.tap-result-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tap-space-3);
+}
+
+.tap-result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--tap-size-sm);
+}
+
+.tap-result-row__label { color: var(--tap-muted); }
+
+.tap-result-row__value {
+  color: var(--tap-text);
+  font-weight: 600;
+  font-family: var(--tap-mono);
+  font-size: var(--tap-size-xs);
+}
+
+/* ─── Footer ─────────────────────────────────────────────── */
+.tap-footer {
+  text-align: center;
+  font-size: var(--tap-size-xs);
+  color: var(--tap-muted);
+  padding-top: var(--tap-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tap-space-2);
+}
+
+/* ─── Utilities ──────────────────────────────────────────── */
+.tap-flex-center { display: flex; align-items: center; justify-content: center; }
+.tap-gap-2 { gap: var(--tap-space-2); }
+.tap-mt-auto { margin-top: auto; }
+.tap-text-center { text-align: center; }
