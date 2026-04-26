@@ -114,8 +114,7 @@ class WebViewActivity : AppCompatActivity() {
                 val isoDep = IsoDep.get(tag) ?: throw Exception("IsoDep não disponível")
                 isoDep.connect()
                 
-                val reader = EmvReader(isoDep)
-                val cardData = reader.readCard()
+                val cardData = EmvReader.read(isoDep)
                 
                 isoDep.close()
                 
@@ -123,8 +122,8 @@ class WebViewActivity : AppCompatActivity() {
                 val json = JSONObject().apply {
                     put("pan", cardData.pan)
                     put("expiry", cardData.expiry)
-                    put("holderName", cardData.holderName)
-                    put("brand", cardData.brand)
+                    put("holderName", cardData.cardholderName)
+                    put("brand", detectBrand(cardData.aid))
                 }
                 
                 withContext(Dispatchers.Main) {
@@ -134,7 +133,7 @@ class WebViewActivity : AppCompatActivity() {
                     )
                 }
                 
-                Log.d(TAG, "Card read success: ${cardData.brand}")
+                Log.d(TAG, "Card read success: ${detectBrand(cardData.aid)}")
                 
             } catch (e: Exception) {
                 Log.e(TAG, "Card read error", e)
@@ -180,9 +179,9 @@ class WebViewActivity : AppCompatActivity() {
                 
                 @Suppress("DEPRECATION")
                 val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    (getSystemService(VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager).defaultVibrator
+                    (this@WebViewActivity.getSystemService(VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager).defaultVibrator
                 } else {
-                    getSystemService(VIBRATOR_SERVICE) as android.os.Vibrator
+                    this@WebViewActivity.getSystemService(VIBRATOR_SERVICE) as android.os.Vibrator
                 }
                 
                 vibrator.vibrate(pattern, -1)
@@ -194,5 +193,15 @@ class WebViewActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "WebViewActivity"
+        
+        private fun detectBrand(aid: String): String {
+            return when {
+                aid.startsWith("A0000000031010") || aid.startsWith("A0000000032010") -> "Visa"
+                aid.startsWith("A0000000041010") -> "Mastercard"
+                aid.startsWith("A0000000043060") -> "Maestro"
+                aid.startsWith("A0000001523010") -> "Elo"
+                else -> "Unknown"
+            }
+        }
     }
 }
