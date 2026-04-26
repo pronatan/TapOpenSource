@@ -84,7 +84,7 @@ class MainViewModel : ViewModel() {
                     else -> "Unknown"
                 }
 
-                val result = GatewayClient.charge(
+                val result = dev.tapopensource.app.gateway.GatewayClientV2.charge(
                     amountCents = amountCents,
                     type        = paymentType,
                     cardToken   = token,
