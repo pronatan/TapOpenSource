@@ -14,9 +14,10 @@ TapOpenSource é um projeto open source que permite processar pagamentos por apr
 - ✅ **Parser TLV robusto** (BER-TLV completo)
 - ✅ **Web App** com NFC Web API (tags NDEF)
 - ✅ **Web-to-Native Bridge** - Web app processa cartões EMV via Android
+- ✅ **AbacatePay integrado** - Pagamentos reais via PIX
 - ✅ **Design system próprio** (tap.css)
 - ✅ **Logs centralizados** via Cloudflare Worker
-- ✅ **Gateway plugável** (mock incluído)
+- ✅ **Gateway plugável** (AbacatePay configurado)
 - ✅ **Vibração** em cada etapa da transação
 - ✅ **Animação NFC** com 3 anéis pulsantes
 
@@ -160,6 +161,26 @@ Web App (JS) ←→ JavaScript Interface ←→ Android Native (Kotlin)
 - ✅ Fácil atualização - deploy na web, app usa automaticamente
 
 📖 **Documentação completa:** [BRIDGE.md](BRIDGE.md)
+
+---
+
+## 🥑 AbacatePay Integration
+
+O projeto está integrado com **AbacatePay** para processar pagamentos reais via PIX!
+
+### Como funciona
+
+1. Usuário aproxima cartão EMV
+2. App lê dados do cartão (PAN, bandeira, validade)
+3. Cria cobrança PIX no AbacatePay
+4. Retorna URL de pagamento
+5. Usuário paga via PIX
+
+**Credenciais configuradas:**
+- API Key: `abc_prod_yeJaNm3pHDQGNREsDBKU4pat`
+- Endpoint: `https://api.abacatepay.com/v1/billing`
+
+📖 **Documentação completa:** [ABACATEPAY.md](ABACATEPAY.md)
 
 ---
 
