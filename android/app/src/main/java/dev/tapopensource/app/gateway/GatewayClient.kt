@@ -13,11 +13,8 @@ import org.json.JSONObject
  */
 object GatewayClient {
 
-    // AbacatePay configuration
-    // NOTA: Requer produtos pré-cadastrados no dashboard
-    // Ative quando tiver produtos criados: https://app.abacatepay.com/products
-    private val ENDPOINT: String? = null // null = modo mock
-    // private val ENDPOINT = "https://api.abacatepay.com/v2/checkouts/create"
+    // AbacatePay configuration - ATIVADO
+    private val ENDPOINT = "https://api.abacatepay.com/v2/checkouts/create"
     private const val API_KEY = "abc_prod_yeJaNm3pHDQGNREsDBKU4pat"
 
     private val client = OkHttpClient.Builder()
@@ -51,13 +48,15 @@ object GatewayClient {
             LogClient.info("gateway:charge_start", mapOf("amount" to amountCents, "type" to type))
 
             // AbacatePay checkout payload
-            // IMPORTANTE: Requer produto pré-cadastrado no dashboard
-            // Substitua "PRODUTO_ID_AQUI" pelo ID real do produto
+            // Produto tem preço R$ 0,01 - calcula quantity para atingir valor desejado
+            val productPrice = 1 // R$ 0,01 em centavos
+            val quantity = maxOf(1, amountCents / productPrice)
+            
             val payload = JSONObject().apply {
                 put("items", org.json.JSONArray().put(
                     JSONObject().apply {
-                        put("id", "PRODUTO_ID_AQUI") // ⚠️ SUBSTITUA pelo ID do produto
-                        put("quantity", 1)
+                        put("id", "prod_Fbzagare4CyeXH4mtJ5zUjpy") // ✅ Produto: Pagamento NFC
+                        put("quantity", quantity)
                     }
                 ))
                 put("methods", org.json.JSONArray().put("CARD"))
@@ -72,7 +71,7 @@ object GatewayClient {
                     put("holderName", holderName)
                     put("expiry", expiry)
                     put("amount", amountCents)
-                    put("description", "${if (type == "debit") "Débito" else "Crédito"} - $brand - ${cardToken.take(6)}...${cardToken.takeLast(4)}")
+                    put("description", "${if (type == "debit") "Débito" else "Crédito"} - $brand - R$ ${String.format("%.2f", amountCents / 100.0)}")
                 })
             }
 

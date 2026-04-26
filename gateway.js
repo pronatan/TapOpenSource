@@ -11,11 +11,8 @@
  */
 
 const GATEWAY_CONFIG = {
-  // AbacatePay API endpoint
-  // NOTA: Requer produtos pré-cadastrados no dashboard
-  // Ative quando tiver produtos criados: https://app.abacatepay.com/products
-  endpoint: null, // null = modo mock (mude para URL abaixo quando configurar)
-  // endpoint: 'https://api.abacatepay.com/v2/checkouts/create',
+  // AbacatePay API endpoint - ATIVADO
+  endpoint: 'https://api.abacatepay.com/v2/checkouts/create',
   
   // AbacatePay API key
   apiKey: 'abc_prod_yeJaNm3pHDQGNREsDBKU4pat',
@@ -39,26 +36,33 @@ const Gateway = (() => {
    * @param {{ amount: number, type: 'debit'|'credit', cardToken: string, source: string, brand: string, expiry: string, holderName: string }} params
    * @returns {object}
    */
-  const buildPayload = ({ amount, type, cardToken, source, brand, expiry, holderName }) => ({
-    items: [{
-      id: 'PRODUTO_ID_AQUI', // ⚠️ SUBSTITUA pelo ID do produto criado no dashboard
-      quantity: 1,
-    }],
-    methods: ['CARD'], // Cartão de crédito/débito
-    externalId: `CARD-${Date.now()}`,
-    metadata: {
-      app: 'TapOpenSource',
-      version: '1.0.0',
-      paymentType: type,
-      cardBrand: brand,
-      cardToken: cardToken,
-      tokenSource: source,
-      holderName: holderName,
-      expiry: expiry,
-      amount: amount, // em centavos
-      description: `${type === 'debit' ? 'Débito' : 'Crédito'} - ${brand} - ${cardToken?.slice(0, 6)}...${cardToken?.slice(-4)}`,
-    },
-  });
+  const buildPayload = ({ amount, type, cardToken, source, brand, expiry, holderName }) => {
+    // Produto tem preço R$ 0,01 (1 centavo)
+    // Quantidade = valor total / preço unitário
+    const productPrice = 1; // R$ 0,01 em centavos
+    const quantity = Math.max(1, Math.floor(amount / productPrice));
+    
+    return {
+      items: [{
+        id: 'prod_Fbzagare4CyeXH4mtJ5zUjpy', // ✅ Produto: Pagamento NFC (R$ 0,01)
+        quantity: quantity, // Calcula quantity para atingir o valor desejado
+      }],
+      methods: ['CARD'], // Cartão de crédito/débito
+      externalId: `CARD-${Date.now()}`,
+      metadata: {
+        app: 'TapOpenSource',
+        version: '1.0.0',
+        paymentType: type,
+        cardBrand: brand,
+        cardToken: cardToken,
+        tokenSource: source,
+        holderName: holderName,
+        expiry: expiry,
+        amount: amount, // valor real em centavos
+        description: `${type === 'debit' ? 'Débito' : 'Crédito'} - ${brand} - R$ ${(amount / 100).toFixed(2)}`,
+      },
+    };
+  };
 
   /**
    * Process a payment through the configured gateway.
