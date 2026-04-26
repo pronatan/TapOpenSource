@@ -63,7 +63,7 @@ TapOpenSource é um projeto open source que permite processar pagamentos por apr
 
 1. **Clone o repositório:**
 ```bash
-git clone https://github.com/seu-usuario/TapOpenSource.git
+git clone https://github.com/pronatan/TapOpenSource.git
 cd TapOpenSource
 ```
 
@@ -253,8 +253,8 @@ MIT License - veja [LICENSE](LICENSE) para detalhes.
 
 ## 📞 Suporte
 
-- **Issues**: [GitHub Issues](https://github.com/seu-usuario/TapOpenSource/issues)
-- **Discussões**: [GitHub Discussions](https://github.com/seu-usuario/TapOpenSource/discussions)
+- **Issues**: [GitHub Issues](https://github.com/pronatan/TapOpenSource/issues)
+- **Discussões**: [GitHub Discussions](https://github.com/pronatan/TapOpenSource/discussions)
 
 ---
 
