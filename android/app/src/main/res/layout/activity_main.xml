@@ -29,7 +29,20 @@
                 android:fontFamily="@font/inter"
                 android:textColor="#111827"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Web Mode Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_web_mode"
+                style="@style/Widget.TapOS.GhostBtn"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="🌐 Modo Web (com NFC nativo)"
+                android:textSize="13sp"
+                android:layout_marginBottom="16dp"
+                app:icon="@drawable/ic_nfc"
+                app:iconGravity="textStart"
+                app:iconSize="16dp"/>
 
             <!-- Amount card -->
             <androidx.cardview.widget.CardView

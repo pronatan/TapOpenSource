@@ -104,7 +104,7 @@ const App = (() => {
     nfcStatus.textContent = 'Aguardando leitura NFC...';
 
     if (!NFC.isSupported()) {
-      showResult(false, { message: 'Web NFC não suportado. Use Chrome no Android com NFC ativado.' });
+      showResult(false, { message: 'NFC não suportado neste dispositivo.' });
       return;
     }
 
@@ -114,8 +114,8 @@ const App = (() => {
         NFC.stopScan();
         nfcStatus.textContent = 'Cartão detectado!';
         Log.info('app:nfc_read_success', { source: NFC.extractCardToken(nfcData).source });
-        const { token, source } = NFC.extractCardToken(nfcData);
-        processPayment(token, source);
+        const cardInfo = NFC.extractCardToken(nfcData);
+        processPayment(cardInfo);
       },
       (err) => {
         vibrate(300);
@@ -123,20 +123,25 @@ const App = (() => {
         nfcStatus.textContent = err.message;
         Log.error('app:nfc_read_error', { message: err.message });
         showResult(false, { message: err.message });
-      }
+      },
+      // Passa amount e type para o Android nativo
+      { amount: amountCents, type: paymentType }
     );
   };
 
   // --- Payment processing ---
-  const processPayment = async (cardToken, source) => {
+  const processPayment = async (cardInfo) => {
     showScreen('processing');
     processingStatus.textContent = 'Enviando ao gateway...';
 
     const result = await Gateway.charge({
       amount: amountCents,
       type: paymentType,
-      cardToken,
-      source,
+      cardToken: cardInfo.token,
+      source: cardInfo.source,
+      brand: cardInfo.brand,
+      expiry: cardInfo.expiry,
+      holderName: cardInfo.holderName,
     });
 
     // Vibra conforme resultado

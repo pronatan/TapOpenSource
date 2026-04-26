@@ -1,6 +1,6 @@
 /**
  * TapOpenSource — NFC Reader Module
- * Uses Web NFC API (NDEFReader) — Chrome Android 89+
+ * Uses Native Android NFC (via bridge) or Web NFC API fallback
  * https://developer.mozilla.org/en-US/docs/Web/API/Web_NFC_API
  */
 
@@ -8,7 +8,10 @@ const NFC = (() => {
   let reader = null;
   let abortController = null;
 
-  const isSupported = () => 'NDEFReader' in window;
+  const isSupported = () => {
+    // Prioriza Android nativo, fallback para Web NFC
+    return (typeof AndroidNFC !== 'undefined') || ('NDEFReader' in window);
+  };
 
   /**
    * Vibração segura — funciona mesmo fora de user gesture.
@@ -40,10 +43,38 @@ const NFC = (() => {
 
   /**
    * Start NFC scan session.
-   * @param {function} onRead  - Callback com { serialNumber, records, raw }
+   * @param {function} onRead  - Callback com { serialNumber, records, raw } ou cardData do Android
    * @param {function} onError - Callback com Error
+   * @param {object} options - { amount, type } para Android native
    */
-  const startScan = async (onRead, onError) => {
+  const startScan = async (onRead, onError, options = {}) => {
+    // Se está no Android WebView, usa NFC nativo
+    if (typeof AndroidNFC !== 'undefined') {
+      try {
+        _vibrate(80); // vibra ao iniciar
+        
+        Log.info('nfc:scan_started_native', { amount: options.amount, type: options.type });
+        
+        const cardData = await NativeBridge.readCard(options.amount || 0, options.type || 'debit');
+        
+        _vibrate([60, 40, 60]); // sucesso
+        
+        Log.info('nfc:reading_native', { 
+          pan: cardData.pan?.slice(0, 6) + '...', 
+          brand: cardData.brand 
+        });
+        
+        onRead(cardData);
+        
+      } catch (err) {
+        _vibrate(300); // erro
+        Log.error('nfc:scan_error_native', { message: err.message });
+        onError(err);
+      }
+      return;
+    }
+
+    // Fallback: Web NFC API (só funciona com tags NDEF)
     if (!isSupported()) {
       onError(new Error('Web NFC não suportado. Use Chrome no Android com NFC ativado.'));
       return;
@@ -92,6 +123,13 @@ const NFC = (() => {
   };
 
   const stopScan = () => {
+    // Cancela no Android nativo
+    if (typeof AndroidNFC !== 'undefined') {
+      NativeBridge.cancelRead();
+      return;
+    }
+    
+    // Cancela Web NFC
     if (abortController) {
       abortController.abort();
       abortController = null;
@@ -104,7 +142,19 @@ const NFC = (() => {
    * Usa _safeBase64 para evitar crash com UIDs binários.
    */
   const extractCardToken = (nfcData) => {
-    const textRecord = nfcData.records.find(r => r.recordType === 'text' && r.data);
+    // Se veio do Android nativo, já tem os dados estruturados
+    if (nfcData.pan && nfcData.brand) {
+      return {
+        token: nfcData.pan,
+        brand: nfcData.brand,
+        expiry: nfcData.expiry,
+        holderName: nfcData.holderName,
+        source: 'native_emv',
+      };
+    }
+    
+    // Fallback: Web NFC (tags NDEF)
+    const textRecord = nfcData.records?.find(r => r.recordType === 'text' && r.data);
     const raw = textRecord?.data || nfcData.serialNumber || 'unknown';
     return {
       token: _safeBase64(raw),
