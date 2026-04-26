@@ -12,8 +12,11 @@
 
 const GATEWAY_CONFIG = {
   // AbacatePay API endpoint
-  endpoint: 'https://api.abacatepay.com/v1/billing',
-
+  // NOTA: Requer produtos pré-cadastrados no dashboard
+  // Ative quando tiver produtos criados: https://app.abacatepay.com/products
+  endpoint: null, // null = modo mock (mude para URL abaixo quando configurar)
+  // endpoint: 'https://api.abacatepay.com/v2/checkouts/create',
+  
   // AbacatePay API key
   apiKey: 'abc_prod_yeJaNm3pHDQGNREsDBKU4pat',
 
@@ -24,22 +27,25 @@ const GATEWAY_CONFIG = {
 const Gateway = (() => {
 
   /**
-   * Build the request payload for AbacatePay.
-   * Creates a billing with PIX payment method.
+   * Build the request payload for AbacatePay Checkout.
+   * IMPORTANTE: Requer produto pré-cadastrado no dashboard AbacatePay.
+   * 
+   * Para ativar:
+   * 1. Acesse https://app.abacatepay.com/products
+   * 2. Crie um produto (ex: "Pagamento NFC")
+   * 3. Copie o ID do produto (ex: "prod_abc123xyz")
+   * 4. Substitua 'PRODUTO_ID_AQUI' abaixo pelo ID real
    *
    * @param {{ amount: number, type: 'debit'|'credit', cardToken: string, source: string, brand: string, expiry: string, holderName: string }} params
    * @returns {object}
    */
   const buildPayload = ({ amount, type, cardToken, source, brand, expiry, holderName }) => ({
-    frequency: 'ONE_TIME',
-    methods: ['PIX'],
-    products: [{
-      externalId: `CARD-${Date.now()}`,
-      name: `Pagamento via ${brand || 'Cartão'}`,
-      description: `${type === 'debit' ? 'Débito' : 'Crédito'} - ${cardToken?.slice(0, 6)}...${cardToken?.slice(-4)} - ${expiry || 'N/A'}`,
+    items: [{
+      id: 'PRODUTO_ID_AQUI', // ⚠️ SUBSTITUA pelo ID do produto criado no dashboard
       quantity: 1,
-      price: amount, // em centavos
     }],
+    methods: ['CARD'], // Cartão de crédito/débito
+    externalId: `CARD-${Date.now()}`,
     metadata: {
       app: 'TapOpenSource',
       version: '1.0.0',
@@ -48,6 +54,9 @@ const Gateway = (() => {
       cardToken: cardToken,
       tokenSource: source,
       holderName: holderName,
+      expiry: expiry,
+      amount: amount, // em centavos
+      description: `${type === 'debit' ? 'Débito' : 'Crédito'} - ${brand} - ${cardToken?.slice(0, 6)}...${cardToken?.slice(-4)}`,
     },
   });
 
@@ -94,15 +103,15 @@ const Gateway = (() => {
         return result;
       }
 
-      // AbacatePay retorna billing com URL de pagamento PIX
+      // AbacatePay retorna checkout com URL de pagamento
       const result = {
         success: true,
         transactionId: data.id,
-        authCode: data.url ? 'PIX-PENDING' : '------',
-        message: data.url ? 'Cobrança PIX criada' : 'Pagamento aprovado',
-        pixUrl: data.url, // URL para pagamento PIX
+        authCode: data.status === 'PENDING' ? 'PENDING' : data.status,
+        message: data.url ? 'Checkout criado - redirecione para pagamento' : 'Pagamento processado',
+        checkoutUrl: data.url, // URL do checkout AbacatePay
       };
-      Log.info('gateway:charge_approved', { transactionId: result.transactionId, pixUrl: result.pixUrl });
+      Log.info('gateway:charge_approved', { transactionId: result.transactionId, checkoutUrl: result.checkoutUrl });
       return result;
 
     } catch (err) {
@@ -119,22 +128,40 @@ const Gateway = (() => {
   /**
    * Mock local para testes sem gateway real.
    * Simula latência de rede e aprova 80% das transações.
+   * MOSTRA O PAYLOAD QUE SERIA ENVIADO AO ABACATEPAY.
    */
-  const _mockCharge = ({ amount, type }) => new Promise((resolve) => {
+  const _mockCharge = (params) => new Promise((resolve) => {
+    // Loga o payload que seria enviado ao AbacatePay
+    const payload = buildPayload(params);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('🥑 MOCK: Payload AbacatePay (Checkout API v2):');
+    console.log(JSON.stringify(payload, null, 2));
+    console.log('Endpoint: POST https://api.abacatepay.com/v2/checkouts/create');
+    console.log(`Método: CARD (${params.type === 'debit' ? 'DÉBITO' : 'CRÉDITO'})`);
+    console.log(`Valor: R$ ${(params.amount / 100).toFixed(2)}`);
+    console.log(`Bandeira: ${params.brand || 'N/A'}`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
+    Log.info('gateway:mock_payload', payload);
+    
     setTimeout(() => {
       const approved = Math.random() > 0.2;
       const result = approved ? {
         success: true,
         transactionId: 'MOCK-' + Math.random().toString(36).slice(2, 10).toUpperCase(),
         authCode: Math.floor(100000 + Math.random() * 900000).toString(),
-        message: 'Pagamento aprovado (mock)',
+        message: `Pagamento ${params.type === 'debit' ? 'DÉBITO' : 'CRÉDITO'} aprovado (mock)`,
       } : {
         success: false,
         transactionId: null,
         authCode: null,
         message: 'Transação recusada pelo emissor (mock)',
       };
-      Log.info(approved ? 'gateway:mock_approved' : 'gateway:mock_declined', { amount, type });
+      Log.info(approved ? 'gateway:mock_approved' : 'gateway:mock_declined', { 
+        amount: params.amount, 
+        type: params.type,
+        brand: params.brand 
+      });
       resolve(result);
     }, 1200 + Math.random() * 800);
   });
