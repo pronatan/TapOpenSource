@@ -427,16 +427,33 @@ object EmvReader {
 
     private fun extractPan(records: List<ByteArray>): String {
         for (rec in records) {
+            // Tenta Track 2 Equivalent Data (tag 57)
             val tag57 = extractTag(rec, 0x57)
             if (tag57 != null) {
-                // Track 2 Equivalent: PAN separado por 'D'
                 val hex = tag57.toHex()
+                Log.info("nfc:pan_from_track2", mapOf("hex" to hex.take(20) + "..."))
                 val dIdx = hex.indexOf('D')
-                if (dIdx > 0) return hex.substring(0, dIdx).trimEnd('F', 'f')
+                if (dIdx > 0) {
+                    val pan = hex.substring(0, dIdx).trimEnd('F', 'f')
+                    if (pan.isNotEmpty()) return pan
+                }
             }
+            
+            // Tenta Application PAN (tag 5A)
             val tag5A = extractTag(rec, 0x5A)
-            if (tag5A != null) return tag5A.toHex().trimEnd('F', 'f')
+            if (tag5A != null) {
+                val pan = tag5A.toHex().trimEnd('F', 'f')
+                Log.info("nfc:pan_from_5a", mapOf("len" to pan.length))
+                if (pan.isNotEmpty()) return pan
+            }
         }
+        
+        // Log para debug: mostra todas as tags disponíveis
+        Log.warn("nfc:pan_not_found", mapOf(
+            "records_count" to records.size,
+            "message" to "PAN não encontrado nas tags 57 ou 5A"
+        ))
+        
         return ""
     }
 
