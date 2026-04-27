@@ -104,9 +104,44 @@ https://tapopensource.pages.dev
 
 ### Gateway de Pagamento
 
-Edite `android/app/src/main/java/dev/tapopensource/app/gateway/GatewayClient.kt`:
+O TapOpenSource suporta múltiplos gateways de pagamento:
+
+#### Mercado Pago (Recomendado)
+
+Integração nativa com Mercado Pago usando tokenização + API de pagamentos.
+
+**Android** - Edite `android/app/src/main/java/dev/tapopensource/app/gateway/MercadoPagoClient.kt`:
 
 ```kotlin
+private const val PUBLIC_KEY = "APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+private const val ACCESS_TOKEN = "APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+```
+
+E ative em `GatewayClient.kt`:
+```kotlin
+private val GATEWAY_TYPE: GatewayType = GatewayType.MERCADO_PAGO
+```
+
+**Web** - Edite `gateway.js`:
+
+```javascript
+const GATEWAY_CONFIG = {
+  type: 'mercadopago',
+  mercadopago: {
+    publicKey: 'APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+    accessToken: 'APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+  },
+};
+```
+
+📖 **Documentação completa:** [MERCADOPAGO.md](MERCADOPAGO.md)
+
+#### Gateway Genérico
+
+Para outros gateways (Cielo, Stone, Stripe, etc.), edite `android/app/src/main/java/dev/tapopensource/app/gateway/GatewayClient.kt`:
+
+```kotlin
+private val GATEWAY_TYPE: GatewayType = GatewayType.GENERIC
 private val ENDPOINT: String? = "https://api.seu-gateway.com/charge"
 private const val API_KEY = "sua_api_key"
 ```
@@ -116,6 +151,8 @@ Suporta qualquer gateway que aceite:
 - `currency` (BRL)
 - `payment_method` (debit/credit)
 - `card.token` (dados EMV)
+
+Ou use a integração nativa com **Mercado Pago** - veja [MERCADOPAGO.md](MERCADOPAGO.md)
 
 ### Logs (Cloudflare Worker)
 
@@ -247,7 +284,8 @@ Contribuições são bem-vindas! Para contribuir:
 - [ ] Suporte para mais bandeiras (Amex, Diners, Hipercard)
 - [ ] Extração completa de PAN (atualmente mascarado)
 - [ ] Verificação de PIN
-- [ ] Integração com gateways reais (Cielo, Stone, Stripe)
+- [x] Integração com Mercado Pago (✅ Implementado)
+- [ ] Integração com outros gateways (Cielo, Stone, Stripe)
 - [ ] Modo offline (armazenamento local)
 - [ ] Relatórios e dashboard
 - [ ] Suporte iOS (CoreNFC)

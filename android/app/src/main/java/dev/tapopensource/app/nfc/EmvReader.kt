@@ -152,6 +152,7 @@ object EmvReader {
     data class CardData(
         val aid: String,           // Application Identifier
         val pan: String,           // PAN mascarado (ex: 4111 **** **** 1111)
+        val panComplete: String,   // PAN completo (SENSÍVEL - use apenas para gateway)
         val expiry: String,        // MMYY
         val cardholderName: String,
         val track2: String,        // Track 2 Equivalent Data (mascarado)
@@ -242,6 +243,7 @@ object EmvReader {
                 return CardData(
                     aid           = aid.toHex(),
                     pan           = maskPan(pan),
+                    panComplete   = pan,  // PAN completo (SENSÍVEL)
                     expiry        = expiry,
                     cardholderName = name,
                     track2        = maskTrack2(track2),

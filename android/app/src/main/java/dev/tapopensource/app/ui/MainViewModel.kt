@@ -64,12 +64,12 @@ class MainViewModel : ViewModel() {
                 val card = EmvReader.read(isoDep)
                 LogClient.info("nfc:emv_read_success", mapOf(
                     "aid"     to card.aid,
-                    "pan"     to card.pan,
+                    "pan"     to card.pan,  // PAN mascarado para log
                     "expiry"  to card.expiry,
                     "name"    to card.cardholderName,
                     "source"  to "isodep",
                 ))
-
+                
                 // Token = PAN mascarado + expiry em base64 (nunca envia PAN completo)
                 val token = android.util.Base64.encodeToString(
                     "${card.pan}|${card.expiry}".toByteArray(), android.util.Base64.NO_WRAP
@@ -92,6 +92,7 @@ class MainViewModel : ViewModel() {
                     brand       = brand,
                     expiry      = card.expiry,
                     holderName  = card.cardholderName,
+                    pan         = card.panComplete,  // PAN completo para Mercado Pago
                 )
 
                 _state.value = AppState.Result(
