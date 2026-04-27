@@ -19,7 +19,7 @@ import org.json.JSONObject
 object GatewayClient {
 
     // Gateway configuration
-    private val GATEWAY_TYPE: GatewayType = GatewayType.MERCADO_PAGO  // Altere aqui
+    private val GATEWAY_TYPE: GatewayType = GatewayType.MOCK  // Modo mock ativo
     private val ENDPOINT: String? = null  // Para gateways genéricos
     private const val API_KEY = "YOUR_API_KEY"  // Para gateways genéricos
     

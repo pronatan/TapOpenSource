@@ -13,13 +13,13 @@
 
 const GATEWAY_CONFIG = {
   // Gateway type: 'mercadopago', 'generic', or 'mock'
-  type: 'mercadopago',
+  type: 'mock',
   
   // Mercado Pago credentials
   // Get yours at: https://www.mercadopago.com.br/developers/panel/credentials
   mercadopago: {
-    publicKey: 'APP_USR-893fdc1d-857f-4e79-afba-54bd4f3b1c59',      // Chave pública (para tokenização)
-    accessToken: 'APP_USR-5963527441161067-042621-59b6a4ba5c8d30a1fba4fabcb652769f-1516341798',  // Access token (para pagamentos)
+    publicKey: 'YOUR_PUBLIC_KEY',
+    accessToken: 'YOUR_ACCESS_TOKEN',
   },
 
   // Generic gateway config

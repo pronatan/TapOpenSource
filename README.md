@@ -104,23 +104,27 @@ https://tapopensource.pages.dev
 
 ### Gateway de Pagamento
 
-O TapOpenSource suporta múltiplos gateways de pagamento:
+O TapOpenSource usa **modo mock** por padrão para testes. Para produção, configure um gateway real:
 
-#### Mercado Pago (Recomendado)
+#### Modo Mock (Padrão)
+
+Simula transações localmente sem gateway real. Aprova 80% das transações aleatoriamente.
+
+**Web** - `gateway.js`:
+```javascript
+const GATEWAY_CONFIG = {
+  type: 'mock',  // Modo mock ativo
+};
+```
+
+**Android** - `GatewayClient.kt`:
+```kotlin
+private val GATEWAY_TYPE: GatewayType = GatewayType.MOCK
+```
+
+#### Mercado Pago (Produção)
 
 Integração nativa com Mercado Pago usando tokenização + API de pagamentos.
-
-**Android** - Edite `android/app/src/main/java/dev/tapopensource/app/gateway/MercadoPagoClient.kt`:
-
-```kotlin
-private const val PUBLIC_KEY = "APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-private const val ACCESS_TOKEN = "APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-```
-
-E ative em `GatewayClient.kt`:
-```kotlin
-private val GATEWAY_TYPE: GatewayType = GatewayType.MERCADO_PAGO
-```
 
 **Web** - Edite `gateway.js`:
 
@@ -128,31 +132,40 @@ private val GATEWAY_TYPE: GatewayType = GatewayType.MERCADO_PAGO
 const GATEWAY_CONFIG = {
   type: 'mercadopago',
   mercadopago: {
-    publicKey: 'APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-    accessToken: 'APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+    publicKey: 'APP_USR-sua-public-key',
+    accessToken: 'APP_USR-seu-access-token',
   },
 };
 ```
 
-📖 **Documentação completa:** [MERCADOPAGO.md](MERCADOPAGO.md)
+**Android** - Edite `MercadoPagoClient.kt` e ative em `GatewayClient.kt`:
+
+```kotlin
+private val GATEWAY_TYPE: GatewayType = GatewayType.MERCADO_PAGO
+```
+
+Obtenha suas credenciais em: https://www.mercadopago.com.br/developers/panel/credentials
 
 #### Gateway Genérico
 
-Para outros gateways (Cielo, Stone, Stripe, etc.), edite `android/app/src/main/java/dev/tapopensource/app/gateway/GatewayClient.kt`:
+Para outros gateways (Cielo, Stone, Stripe, etc.):
 
+**Web** - Edite `gateway.js`:
+```javascript
+const GATEWAY_CONFIG = {
+  type: 'generic',
+  generic: {
+    endpoint: 'https://api.seu-gateway.com/charge',
+    apiKey: 'sua_api_key',
+  },
+};
+```
+
+**Android** - Edite `GatewayClient.kt`:
 ```kotlin
 private val GATEWAY_TYPE: GatewayType = GatewayType.GENERIC
 private val ENDPOINT: String? = "https://api.seu-gateway.com/charge"
-private const val API_KEY = "sua_api_key"
 ```
-
-Suporta qualquer gateway que aceite:
-- `amount` (centavos)
-- `currency` (BRL)
-- `payment_method` (debit/credit)
-- `card.token` (dados EMV)
-
-Ou use a integração nativa com **Mercado Pago** - veja [MERCADOPAGO.md](MERCADOPAGO.md)
 
 ### Logs (Cloudflare Worker)
 
@@ -284,7 +297,7 @@ Contribuições são bem-vindas! Para contribuir:
 - [ ] Suporte para mais bandeiras (Amex, Diners, Hipercard)
 - [ ] Extração completa de PAN (atualmente mascarado)
 - [ ] Verificação de PIN
-- [x] Integração com Mercado Pago (✅ Implementado)
+- [x] Integração com Mercado Pago (✅ Implementado - modo mock ativo por padrão)
 - [ ] Integração com outros gateways (Cielo, Stone, Stripe)
 - [ ] Modo offline (armazenamento local)
 - [ ] Relatórios e dashboard
