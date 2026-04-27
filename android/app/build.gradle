@@ -50,10 +50,7 @@ dependencies {
 
     // JSON
     implementation 'org.json:json:20231013'
-
-    // Mercado Pago SDK
-    implementation 'com.mercadopago.android.px:checkout:4.+'
     
-    // Gson para parsing JSON (usado pelo MP SDK)
+    // Gson para parsing JSON
     implementation 'com.google.code.gson:gson:2.10.1'
 }

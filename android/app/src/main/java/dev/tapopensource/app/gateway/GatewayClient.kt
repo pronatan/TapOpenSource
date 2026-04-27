@@ -105,19 +105,6 @@ object GatewayClient {
         expiry: String,
         holderName: String,
     ): ChargeResult {
-
-    /**
-     * Processa pagamento via gateway genérico
-     */
-    private fun chargeGeneric(
-        amountCents: Int,
-        type: String,
-        cardToken: String,
-        source: String,
-        brand: String,
-        expiry: String,
-        holderName: String,
-    ): ChargeResult {
         return try {
             LogClient.info("gateway:charge_start", mapOf("amount" to amountCents, "type" to type))
 
@@ -142,7 +129,7 @@ object GatewayClient {
             }
 
             val request = Request.Builder()
-                .url(ENDPOINT)
+                .url(ENDPOINT!!)
                 .post(payload.toString().toRequestBody(JSON_TYPE))
                 .header("Authorization", "Bearer $API_KEY")
                 .build()
