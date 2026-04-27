@@ -5,3 +5,6 @@ compatibility_date = "2024-01-01"
 [[kv_namespaces]]
 binding = "LOGS"
 id = "9c95b4ce2400484c8d266618a91e29f0"
+
+[vars]
+LOG_TOKEN = "tapopensource-secret-2026"
