@@ -83,7 +83,14 @@ Ou baixe o APK pré-compilado: [`TapOpenSource.apk`](TapOpenSource.apk)
 
 ### Web
 
-1. **Instale dependências:**
+1. **Acesse a versão online:**
+```
+https://tapopensource.pages.dev
+```
+
+Ou faça deploy próprio:
+
+1. **Instale Wrangler:**
 ```bash
 npm install -g wrangler
 ```
@@ -91,11 +98,6 @@ npm install -g wrangler
 2. **Deploy para Cloudflare Pages:**
 ```bash
 wrangler pages deploy . --project-name=tapopensource
-```
-
-3. **Acesse:**
-```
-https://tapopensource.pages.dev
 ```
 
 ---
@@ -169,7 +171,12 @@ private val ENDPOINT: String? = "https://api.seu-gateway.com/charge"
 
 ### Logs (Cloudflare Worker)
 
-Deploy do worker de logs:
+Os logs estão disponíveis em:
+```
+https://tapopensource-logs.natanaelrodriguesfernandes521.workers.dev/logs?token=tapopensource-secret-2026
+```
+
+Para fazer deploy próprio:
 
 ```bash
 cd worker-logs
@@ -273,11 +280,13 @@ Valores configurados para compatibilidade máxima:
 5. Toque em "Cobrar"
 6. Aproxime o cartão
 
+**Nota:** O app está em **modo mock** por padrão. As transações são simuladas localmente (80% de aprovação). Para processar pagamentos reais, configure um gateway em `gateway.js` e `GatewayClient.kt`.
+
 ### Logs de debug
 
 Acesse os logs em tempo real:
 ```
-https://seu-worker.workers.dev/logs?token=seu_token
+https://tapopensource-logs.natanaelrodriguesfernandes521.workers.dev/logs?token=tapopensource-secret-2026
 ```
 
 ---
